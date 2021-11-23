@@ -2,7 +2,7 @@
 
 # dual-dinamic-pppoe-ipv6-v6-com-netwatch-pub.rsc
 
-Script criado para dual wan/failover usado em uma RB 750gr3 Hex para as operadoras VIVO (modo pppoe / PPPoe client) e VIRTUA (modo bridge / DHCP client), com uso de IPv4 e IPv6 (prefix delegation).
+Script criado para dual wan/failover usado em uma RB 750gr3 Hex para as operadoras VIVO (modo pppoe / PPPoe client) e VIRTUA (modo bridge / DHCP client), com uso de IPv4 e IPv6 (prefix delegation), alocados como IP dinamico.
 
 Link VIVO como principal e VIRTUA como backup/standby.
 
@@ -10,7 +10,7 @@ Scripts de dual wan/failover para IPv4 sao bem comuns - mas para IPv6 nem tanto.
 
 Qual a dificuldade de dual wan em IPv6 ?
 
-O failover em IPv4 sempre eh feito via NAT, as estacoes possuem IP privado e sao roteadas via MASQUERADE/SRCNAT como IP publico do firewall, apenas com a rota de saida variando conforme o link que estiver ativo - nenhum problema maior aqui.
+O failover em IPv4 sempre eh feito via NAT, as estacoes possuem IP privado e sao roteadas via MASQUERADE/SRCNAT com o IP publico do firewall, apenas com a rota de saida variando conforme o link que estiver ativo - nenhum problema maior aqui.
 
 Em IPv6, por outro lado, a ideia eh NAO USAR NAT - entao as estacoes vao receber um IP publico valido, e a RB MIKROTIK faz apenas o papel de firewall do trafego que pode entrar/sair para as estacoes.
 
@@ -29,3 +29,9 @@ Este monitoramento continua ativo - e caso o link VIVO retorne, eh executado o c
 Nao eh uma solucao 'bonita', mas funciona dentro dos objetivos pretendidos (cada estacao ter apenas um IPv6 publico ativo).
 
 A tentacao de usar IPv6 com NAT eh grande (NAT66) - mas esbarra no fato das RB MIKROTIK ainda nao terem suporte a esta feature (prometida para a versao 7 do RouterOS).
+
+Cenario de uso: cliente com dois links dinamicos (sem IP fixo) e que precise habilitar o acesso a um servico interno (p.ex. DVR) via IPv6 e atualizacao do IP de acesso via DDNS.
+
+Via IPv4 com NAT - a solucao eh bem comum.
+
+Mas via IPv6 fica a duvida: atualmente as operadoras disponibilizam apenas /64 (apesar da recomendacao de entregar um /56 ou mesmo /48) e de modo dinamico para clientes residenciais e/ou pequenos negocios. Ate eh possivel solicitar IP fixo, mas os custos sao proibitivos. Se deixar de usar IPv4 para acessar estes servicos (p.ex. DVR, cameras, TS, etc) - como deve ser este modelo de acesso em IPv6 ? Este script mostra um caminho (nao obrigatoriamente o melhor): a estacao vai receber o IPv6 via RA dentro do prefix delegation do link ativo, e apenas dele - assim, pode atualizar um DDNS baseado em IPv6 e permitir o acesso remoto. Nao eh uma resposta definitiva, mas eh uma resposta que serve neste momento (nov/2021).
